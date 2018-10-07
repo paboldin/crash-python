@@ -233,12 +233,15 @@ gdb_merge: force
 	@rm -f ${PROGRAM}
 	@if [ ! -f ${GDB}/config.status ]; then \
 	  (cd ${GDB}; ./configure ${GDB_CONF_FLAGS} --with-separate-debug-dir=/usr/lib/debug \
-	    --with-bugurl="" --with-expat=no --with-python=no --disable-sim; \
+	    --with-bugurl="" --with-expat=no --prefix=$(CURDIR)/prefix \
+	    --with-python=python3 --disable-sim; \
 	  make --no-print-directory CRASH_TARGET=${TARGET}; echo ${TARGET} > crash.target) \
 	else make --no-print-directory rebuild; fi
 	@if [ ! -f ${PROGRAM} ]; then \
 	  echo; echo "${PROGRAM} build failed"; \
 	  echo; exit 1; fi
+	@mkdir -p $(CURDIR)/prefix/share/gdb/python/gdb/
+	@cp -ra ${GDB}/gdb/python/lib/gdb/. $(CURDIR)/prefix/share/gdb/python/gdb/
 
 rebuild:
 	@if [ ! -f ${GDB}/${GDB}.patch ]; then \
